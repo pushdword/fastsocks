@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <signal.h>
-
+#include "fastsocks.h"
 #define BACKLOG  10      /* Passed to listen() */
 #define BUF_SIZE 16384    /* Buffer for  transfers */
 
@@ -24,19 +24,21 @@
    all sockets is and signed integer.
    
 */
+//This will receive data from a socket and send it to another.
 unsigned char transfer(int from, int to)
 {
-    void *buf[BUF_SIZE];
+    void *buf[BUF_SIZE]; //prepare our buffer 16k size
     unsigned char rst = 0;
     int bytes_read, bytes_written;
-    bytes_read = read(from, buf, BUF_SIZE);
+    bytes_read = read(from, buf, BUF_SIZE); //put it to buffer maximum 16k from from socket
     if (bytes_read == 0) {
-        rst = (unsigned char)0x1;
+        rst = (unsigned char)0x1; //so if is 0 means from socket just disconnected.
     }
     else {
-        bytes_written = write(to, buf, bytes_read);
+        bytes_written = write(to, buf, bytes_read); //if it has data so write it to to socket with bytes_read.
+        //it cannot be more than 16k because read function above will only return 16k top.
         if (bytes_written == -1) {
-            rst = (unsigned char)0x1;
+            rst = (unsigned char)0x1; //if it failed to write data means the to socket disconnected.
         }
     }
     return rst;

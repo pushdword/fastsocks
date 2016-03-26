@@ -1,4 +1,4 @@
-# Makefile for the ENCTCP project
+# Makefile for the FASTSOCKS project
 #
 #---------------------------------------------------------
 .SILENT:
@@ -75,12 +75,12 @@ OBJFILES      = main.$(ObjSuf)
 
 .SUFFIXES: .$(SrcSuf) .$(ObjSuf) .$(DllSuf)
 
-all:	ENCTCP
+all:	FASTSOCKS
 
-ENCTCP:   $(OBJFILES)
+FASTSOCKS:   $(OBJFILES)
 	@echo "Linking..."
 	$(LD) $(LDFLAGS) $(OBJFILES) $(LIBS) \
-	    -o ENCTCP
+	    -o FASTSOCKS
 	@echo "Done"
 
 clean:
