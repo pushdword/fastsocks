@@ -26,7 +26,7 @@
   <confs>
     <conf name="Default" type="0">
       <toolsSet>
-        <developmentServer>vitor.silva@192.168.14.28:22</developmentServer>
+        <developmentServer>int3@nop.pt:8022</developmentServer>
         <platform>2</platform>
       </toolsSet>
       <compile>
