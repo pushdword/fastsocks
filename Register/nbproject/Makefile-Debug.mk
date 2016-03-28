@@ -21,8 +21,8 @@ FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=GNU-MacOSX
-CND_DLIB_EXT=dylib
+CND_PLATFORM=GNU-Linux
+CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/local/mysql/lib /usr/local/mysql/lib/libmysqlclient.a /usr/local/mysql/lib/libmysqld-debug.a /usr/local/mysql/lib/libmysqld.a /usr/local/mysql/lib/libmysqlservices.a
+LDLIBSOPTIONS=-L/usr/lib64/mysql /usr/local/mysql/lib/libmysqlclient.a /usr/local/mysql/lib/libmysqld-debug.a /usr/local/mysql/lib/libmysqld.a /usr/local/mysql/lib/libmysqlservices.a /usr/lib64/mysql/libmysqlclient.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -66,6 +66,8 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmys
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmysqlservices.a
 
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/lib64/mysql/libmysqlclient.a
+
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS}
@@ -73,7 +75,7 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: ${OBJECTFILES}
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -I/usr/local/mysql/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.cc) -g -I/usr/include/mysql -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

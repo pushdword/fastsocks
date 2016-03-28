@@ -9,7 +9,12 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <unistd.h>
-#include <mysql.h> //or mysql/mysql.h
+#ifdef __APPLE__
+    #include <mysql.h> //or mysql/mysql.h
+#endif
+#ifdef __linux__
+    #include <mysql/mysql.h>
+#endif
 using namespace std;
 
 const char *srv = "localhost";
