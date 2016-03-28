@@ -27,6 +27,10 @@ const char *nixsocket = NULL;
 
 unsigned int flag =0;
 
+enum cmd{
+    sol, //solicitation. it returns an registation number if sucessed.
+    ack  //ack of solicitation
+};
 
 
 /*
@@ -37,7 +41,7 @@ void displayActiveReg(MYSQL *conn){
     MYSQL_RES *res;
     MYSQL_ROW row;
     
-    mysql_query(conn,"SELECT REGNR,Token FROM Registed;");
+    mysql_query(conn,"SELECT REGNR,Token FROM registed;");
     
     res = mysql_store_result(conn);
     
@@ -46,21 +50,40 @@ void displayActiveReg(MYSQL *conn){
     }
     mysql_free_result(res);
 }
-
+char* regSol(char token,MYSQL *conn){
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    
+   /*
+    * Validation
+    */
+}
 int main(int argc, char** argv) {
+    
+    /*
+     input validation
+     * top 3 arguments
+     */
+    
     
     
     MYSQL *conn;
     conn = mysql_init(NULL);
     if(!mysql_real_connect(conn,srv,user,pass,db,port,nixsocket,flag)){
-        fprintf(stderr,"\nError %s %d \n",mysql_error(conn),mysql_errno(conn));
+        fprintf(stderr,"0Error %s %d \n",mysql_error(conn),mysql_errno(conn));
         exit(1);
     }
     else{
-        printf("Seems ok :P\n");
-        displayActiveReg(conn);
+        printf("1OK\n");
+        //displayActiveReg(conn);
     }
-    
+    if(atoi(argv[1])==cmd.sol && (strlen(argv[2])<=255 && strlen(argv[2])>=128)){
+        //ok. its a solicitation.
+        if(regSol(argv[2],conn)!=NULL){
+            //registed.
+            //
+        }
+    }
     mysql_close(conn);
     return 0;
 }

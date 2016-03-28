@@ -36,26 +36,21 @@
       </toolsSet>
       <compileType>
         <cTool>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/usr/include/mysql</pElem>
           </incDir>
+          <commandLine>$(shell mysql_config --cflags)</commandLine>
         </cTool>
         <ccTool>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/usr/include/mysql</pElem>
           </incDir>
+          <commandLine>$(shell mysql_config --cflags)</commandLine>
         </ccTool>
         <linkerTool>
-          <linkerAddLib>
-            <pElem>/usr/lib64/mysql</pElem>
-          </linkerAddLib>
-          <linkerLibItems>
-            <linkerLibFileItem>/usr/local/mysql/lib/libmysqlclient.a</linkerLibFileItem>
-            <linkerLibFileItem>/usr/local/mysql/lib/libmysqld-debug.a</linkerLibFileItem>
-            <linkerLibFileItem>/usr/local/mysql/lib/libmysqld.a</linkerLibFileItem>
-            <linkerLibFileItem>/usr/local/mysql/lib/libmysqlservices.a</linkerLibFileItem>
-            <linkerLibFileItem>/usr/lib64/mysql/libmysqlclient.a</linkerLibFileItem>
-          </linkerLibItems>
+          <commandLine>$(shell mysql_config --libs)</commandLine>
         </linkerTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">

@@ -39,11 +39,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-m64 $(shell mysql_config --cflags)
 
 # CC Compiler Flags
-CCFLAGS=
-CXXFLAGS=
+CCFLAGS=-m64 $(shell mysql_config --cflags)
+CXXFLAGS=-m64 $(shell mysql_config --cflags)
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -52,25 +52,15 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/lib64/mysql /usr/local/mysql/lib/libmysqlclient.a /usr/local/mysql/lib/libmysqld-debug.a /usr/local/mysql/lib/libmysqld.a /usr/local/mysql/lib/libmysqlservices.a /usr/lib64/mysql/libmysqlclient.a
+LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmysqlclient.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmysqld-debug.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmysqld.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/local/mysql/lib/libmysqlservices.a
-
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: /usr/lib64/mysql/libmysqlclient.a
-
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS} $(shell mysql_config --libs)
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
