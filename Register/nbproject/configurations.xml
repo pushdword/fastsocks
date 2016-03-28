@@ -37,20 +37,14 @@
       <compileType>
         <cTool>
           <architecture>2</architecture>
-          <incDir>
-            <pElem>/usr/include/mysql</pElem>
-          </incDir>
-          <commandLine>$(shell mysql_config --cflags)</commandLine>
+          <commandLine>$(bash mysql_config --cflags)</commandLine>
         </cTool>
         <ccTool>
           <architecture>2</architecture>
-          <incDir>
-            <pElem>/usr/include/mysql</pElem>
-          </incDir>
-          <commandLine>$(shell mysql_config --cflags)</commandLine>
+          <commandLine>$(bash mysql_config --cflags)</commandLine>
         </ccTool>
         <linkerTool>
-          <commandLine>$(shell mysql_config --libs)</commandLine>
+          <commandLine>$(bash mysql_config --libs)</commandLine>
         </linkerTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="0" flavor2="0">

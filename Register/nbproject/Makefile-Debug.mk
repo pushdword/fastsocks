@@ -39,11 +39,11 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-m64 $(shell mysql_config --cflags)
+CFLAGS=-m64 $(bash mysql_config --cflags)
 
 # CC Compiler Flags
-CCFLAGS=-m64 $(shell mysql_config --cflags)
-CXXFLAGS=-m64 $(shell mysql_config --cflags)
+CCFLAGS=-m64 $(bash mysql_config --cflags)
+CXXFLAGS=-m64 $(bash mysql_config --cflags)
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -60,12 +60,12 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS} $(shell mysql_config --libs)
+	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS} $(bash mysql_config --libs)
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -I/usr/include/mysql -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:
