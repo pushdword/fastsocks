@@ -52,154 +52,199 @@ void displayActiveReg(MYSQL *conn){
     }
     mysql_free_result(res);
 }
+
+void test(MYSQL *conn,char *token){
+    
+    MYSQL_STMT *stmt;
+    char *sql;
+
+    // Bind variables
+    MYSQL_BIND param[1], result[1];
+
+    char myString[12];
+    my_bool is_null[1];
+
+    sql = "select REGNR from registed where Token = ?";
+
+    // Allocate statement handler
+    stmt = mysql_stmt_init(conn);
+
+    if (stmt == NULL) {
+     fprintf(stdout, "Could not initialize statement handler");
+     return;
+    }
+
+    // Prepare the statement
+    if (mysql_stmt_prepare(stmt, sql, strlen(sql)) != 0) {
+     fprintf(stdout, "Could not prepare statement");
+     return;
+    }
+
+    // Initialize the result column structures
+    memset (param, 0, sizeof (param)); /* zero the structures */
+    memset (result, 0, sizeof (result)); /* zero the structures */
+
+    // Init param structure
+    // Select
+    
+    unsigned long int paramlen=15,resultlen=12;
+    
+    param[0].buffer_type     = MYSQL_TYPE_LONG;
+    param[0].buffer         = (void *)token;
+    param[0].is_null         = 0;
+    param[0].length         = &paramlen;
+
+    // Result
+    result[0].buffer_type     = MYSQL_TYPE_LONG;
+    result[0].buffer         = (void *)myString;
+    result[0].is_null         = &is_null[0];
+    result[0].length         = &resultlen;
+
+    // Bind param structure to statement
+    if (mysql_stmt_bind_param(stmt, param) != 0) {
+     fprintf(stdout, "Could not bind parameters");
+     return;
+    }
+
+    // Bind result
+    if (mysql_stmt_bind_result(stmt, result) != 0) {
+     fprintf(stdout, "Could not bind results");
+     return;
+    }
+
+    // Set bind parameters
+    //already setup?
+
+    // Execute!!
+    if (mysql_stmt_execute(stmt) != 0) {
+     fprintf(stdout, "Could not execute statement");
+     return;
+    }
+
+    if (mysql_stmt_store_result(stmt) != 0) {
+     fprintf(stdout, "Could not buffer result set");
+     return;
+    }
+
+    // Init data
+    char *data = NULL;
+
+    // Fetch
+    if(mysql_stmt_fetch (stmt) == 0){
+     data = myString;
+    }
+    fprintf(stdout,"token:%s\nDATA:%s\n\n",token,data);
+    // Deallocate result set
+    mysql_stmt_free_result(stmt); /* deallocate result set */
+
+    // Close the statement
+    mysql_stmt_close(stmt);
+    
+}
+
 char* regSol(char* token,MYSQL *conn){
+    
+    test(conn,token);
+    return NULL;
     
     /*
      * Needs to be completed. I have no idea why I can make this work
      * Tested a lot of functions and got some SEGVs and 0 rows.
      * And results that aren't even in the database
      */
-    
     char* regnr;
     MYSQL_STMT *stmt;
     MYSQL_BIND bind[1];
-    unsigned long str_length;
-    my_bool    is_null[3];
+    unsigned long int str_length=0;
    /*
     * Validation
     */
     stmt = mysql_stmt_init(conn);
-    char *sql="SELECT REGNR FROM registed WHERE Token=?";
-    /*
-     * Prepare the statement !
-     */
-    if(mysql_stmt_prepare(stmt,sql,strlen(sql))){
-        fprintf(stderr, " mysql_stmt_prepare(), SELECT failed\n");
-        fprintf(stderr, " %s\n", mysql_stmt_error(stmt));
+    if(stmt==NULL){
+        fprintf(stderr," mysql_stmt_init(), failed\n");
+        fprintf(stderr, "%s\n",mysql_stmt_error(stmt));
         exit(1);
+    }
+    char *sql="SELECT REGNR FROM registed WHERE Token = ?";
+    if(mysql_stmt_prepare(stmt,sql,strlen(sql))!=0){
+        fprintf(stderr, " mysql_stmt_prepare(), SELECT failed?\n");
+        fprintf(stderr, " %s %d\n", mysql_stmt_error(stmt),mysql_stmt_errno(stmt));
+        exit(1);
+    }
+
+    memset(bind, 0, sizeof(bind)); //clears the structure.
+    
+    bind[0].buffer_type=MYSQL_TYPE_STRING;
+    bind[0].buffer=(char*)token;
+    bind[0].buffer_length=strlen(token)+1;
+    bind[0].length= &str_length;
+    bind[0].is_null=0;
+    
+    if(mysql_stmt_bind_param(stmt,bind)!=0)
+    {
+      fprintf(stderr, " mysql_stmt_bind_param(), failed\n");
+      fprintf(stderr, " %s\n", mysql_stmt_error(stmt));
+      exit(1);
     }
     
     /*
-     * Once is prepared, now we need to bind to ? inputs.
+     fetch data
      */
-    memset(bind, 0, sizeof(bind)); //clears the structure.
     
-    bind[0].buffer=(char*)token;
-    bind[0].buffer_type=MYSQL_TYPE_STRING;
-    bind[0].buffer_length=strlen(token);
-    bind[0].is_null=0;
-    bind[0].length=0;
-    /*
-     * Now we need to use what is above to BIND the input to the query
-     * Somehow we need to fetch the results later.
-     */
-    if(mysql_stmt_bind_param(stmt,bind))
-    {
-      fprintf(stderr, " mysql_stmt_bind_result(), failed\n");
-      fprintf(stderr, " %s\n", mysql_stmt_error(stmt));
-      exit(1);
-    }    
-    /*
-     * Now execute.
-     */
-    int status=mysql_stmt_execute(stmt);
-    fprintf(stdout,"Status:%d\n",status);
+    //bind result
     
-    do {
-        int i;
-        int num_fields;       /* number of columns in result */
-        MYSQL_FIELD *fields;  /* for result set metadata */
-        MYSQL_BIND *rs_bind;  /* for output buffers */
+    
+    MYSQL_BIND resbind[1];
+    memset(resbind, 0, sizeof(resbind)); //clears the structure.
+    unsigned long reslen=11; //always 11 or 0
+    my_bool isnull[1];
+    char mdata[11];
+    resbind[0].buffer_type=MYSQL_TYPE_STRING;
+    resbind[0].buffer=(void*)mdata;
+    resbind[0].buffer_length=0;
+    resbind[0].length=&reslen;
 
-        /* the column count is > 0 if there is a result set */
-        /* 0 if the result is only the final status packet */
-        num_fields = mysql_stmt_field_count(stmt);
+    if(mysql_stmt_bind_result(stmt,resbind)!=0){
+        fprintf(stderr," mysql_stmt_bind_result(), failed\n");
+        fprintf(stderr, "%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+        
+    if(mysql_stmt_execute(stmt)!=0){
+        fprintf(stderr," mysql_stmt_execute(), failed\n");
+        fprintf(stderr, "%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    fprintf(stdout,"Arrows:%llu\n",mysql_stmt_num_rows(stmt));
+    
+    if(mysql_stmt_store_result(stmt)!=0){
+        fprintf(stderr," mysql_stmt_store_result(), failed\n");
+        fprintf(stderr, "%s errno:%d\n",mysql_stmt_error(stmt),mysql_stmt_errno(stmt));
+        exit(1);
+    }
 
-        if (num_fields > 0)
-        {
-          /* there is a result set to fetch */
-          printf("Number of columns in result: %d\n", (int) num_fields);
+    
+    
+    if(mysql_stmt_fetch(stmt)==1){
+        fprintf(stderr," mysql_stmt_fetch(), failed\n");
+        fprintf(stderr, "%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
 
-          /* what kind of result set is this? */
-          printf("Data: ");
-
-
-          MYSQL_RES *rs_metadata = mysql_stmt_result_metadata(stmt);
-
-          fields = mysql_fetch_fields(rs_metadata);
-
-          rs_bind = (MYSQL_BIND *) malloc(sizeof (MYSQL_BIND) * num_fields);
-          if (!rs_bind)
-          {
-            printf("Cannot allocate output buffers\n");
+    if (reslen>0) //size of buffer?
+    {        
+        if(mysql_stmt_fetch_column(stmt, bind, 0, 0)!=0){
+            fprintf(stderr," mysql_stmt_fetch_column(), failed\n");
+            fprintf(stderr, "%s\n",mysql_stmt_error(stmt));
             exit(1);
-          }
-          memset(rs_bind, 0, sizeof (MYSQL_BIND) * num_fields);
-
-          /* set up and bind result set output buffers */
-          for (i = 0; i < num_fields; ++i)
-          {
-            rs_bind[i].buffer_type = fields[i].type;
-            rs_bind[i].is_null = &is_null[i];
-
-            switch (fields[i].type)
-            {
-              case 253:
-                rs_bind[i].buffer = (char *) (token);
-                rs_bind[i].buffer_length = sizeof (token);
-                break;
-
-              default:
-                fprintf(stderr, "ERROR: unexpected type: %d.\n", fields[i].type);
-                exit(1);
-            }
-          }
-
-          status = mysql_stmt_bind_result(stmt, rs_bind);
-
-
-          /* fetch and display result set rows */
-          while (1)
-          {
-            status = mysql_stmt_fetch(stmt);
-
-            if (status == 1 || status == MYSQL_NO_DATA)
-              break;
-
-            for (i = 0; i < num_fields; ++i)
-            {
-              switch (rs_bind[i].buffer_type)
-              {
-                case 253:
-                  if (*rs_bind[i].is_null)
-                    printf(" val[%d] = NULL;", i);
-                  else
-                    printf(" val[%d] = %s;",
-                           i, ((char *) rs_bind[i].buffer));
-                  break;
-
-                default:
-                  printf("  unexpected type (%d)\n",
-                    rs_bind[i].buffer_type);
-              }
-            }
-            printf("\n");
-          }
-
-          mysql_free_result(rs_metadata); /* free metadata */
-          free(rs_bind);                  /* free output buffers */
         }
-        else
-        {
-          /* no columns = final status packet */
-          printf("End of procedure output\n");
-        }
-
-        /* more results? -1 = no, >0 = error, 0 = yes (keep looking) */
-        status = mysql_stmt_next_result(stmt);
-    } while (status == 0);
-    
-    return NULL;
+        
+        return "1";
+    }
+    else{
+        fprintf(stdout,"No data returned\n");
+        return NULL;
+    }
 }
 int main(int argc, char** argv) {
     

@@ -44,6 +44,9 @@
           <commandLine>$(bash mysql_config --cflags)</commandLine>
         </ccTool>
         <linkerTool>
+          <linkerLibItems>
+            <linkerLibLibItem>mysqlclient</linkerLibLibItem>
+          </linkerLibItems>
           <commandLine>$(bash mysql_config --libs)</commandLine>
         </linkerTool>
       </compileType>
