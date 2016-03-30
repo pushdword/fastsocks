@@ -31,10 +31,11 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" 2 1503171330 33422</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 1 tokenreg312312 1503171330 33422</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 1 DFAWDFSADSADSA 1503171330 33423</runcommandpicklistitem>
-          <runcommandpicklistitem>"${OUTPUT_PATH}" 1 DFAWDFSADSADSA 1503171330 33422</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 1 DFAWDF1232</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 2 2887647489 33333</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 1 DFAWDFSADSADSA 1503171330 33422</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" 1 DFAWDF1232</runcommand>
+        <runcommand>"${OUTPUT_PATH}" 1 DFAWDFSADSADSA 1503171330 33422</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

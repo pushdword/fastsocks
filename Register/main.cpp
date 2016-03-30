@@ -47,6 +47,7 @@ enum cmd{
 };
 
 
+#include "regutil.h"
 /*
  * Testing register API
  */
@@ -292,8 +293,12 @@ void doNewRegistation(char *token){
      * Authed is only and ONLY when his IP port and src Port number matches his connection into fastcocks service.
      * This service is the only one that can call this program
      */
-    
-    
+    //gen regnr:
+    char registation[12];//3*3+2hifen+NULL
+    memset(registation,0,12);
+    snprintf(registation,12,"%03u-%03u-%03u",gen32int(),gen32int(),gen32int());
+    fprintf(stdout,"Reg number candidate:%s\n",registation);
+    exit(EXIT_SUCCESS);
 }
 
 int main(int argc, char** argv) {
@@ -341,16 +346,16 @@ int main(int argc, char** argv) {
                     doNewRegistation(argv[2]);
                     fprintf(stdout,"Registation completed?\n");
                     return 0;
-                }
-                
-                //create a 3 random 3 digit number like XYZ-ABC-PTR
-                char regnr[STRING_SIZE];
-                
+                }                
             }
             break;
         }
         case 2:{//option is used to auth a client into our db. ;)
             
+            break;
+        }
+        case 3:{
+            //it is authed and wants to register
             break;
         }
         default:

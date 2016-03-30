@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/regutil.o
 
 
 # C Compiler Flags
@@ -60,12 +61,17 @@ LDLIBSOPTIONS=-lmysqlclient
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS} $(bash mysql_config --libs)
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/register ${OBJECTFILES} ${LDLIBSOPTIONS} $(bash mysql_config --libs)
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/regutil.o: regutil.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/regutil.o regutil.cpp
 
 # Subprojects
 .build-subprojects:
