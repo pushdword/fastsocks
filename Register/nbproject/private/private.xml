@@ -9,7 +9,9 @@
         <group>
             <file>rfs://int3@nop.pt:8022/home/int3/fastsocks/Register/regutil.h</file>
             <file>rfs://int3@nop.pt:8022/home/int3/fastsocks/Register/regutil.cpp</file>
+            <file>rfs://int3@nop.pt:8022/home/int3/fastsocks/Register/debug.cpp</file>
             <file>rfs://int3@nop.pt:8022/home/int3/fastsocks/Register/main.cpp</file>
+            <file>rfs://int3@nop.pt:8022/home/int3/fastsocks/Register/debug.h</file>
         </group>
     </open-files>
 </project-private>
