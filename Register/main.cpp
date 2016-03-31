@@ -1,3 +1,4 @@
+#include "regmacros.h"
 #include "debug.h"
 
 /* 
@@ -24,14 +25,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <ctype.h>
 #ifdef __APPLE__
     #include <mysql.h> //or mysql/mysql.h
 #endif
 #ifdef __linux__
     #include <mysql/mysql.h>
 #endif
-#define STRING_SIZE 256
+
 const char *srv = "localhost";
 const char *user= "fastsocks";
 const char *pass="1q2w3e4r";
@@ -216,7 +217,7 @@ void doNewRegistation(MYSQL *conn,char *token,char *buffer,uint32_t buffer_len){
     do{
     memset(registation,0,12);
     snprintf(registation,12,"%03u-%03u-%03u",gen32int(),gen32int(),gen32int());
-    }while(isRegExist(registation,conn)<1);
+    }while(isRegExist(registation,conn));
     
     /*
      * Insert into our db with token.
@@ -240,7 +241,8 @@ int main(int argc, char** argv) {
      input validation
      * top 3 arguments
      */
-    
+    if(argc<=1)
+        return 0;
     MYSQL *conn;
     conn = mysql_init(NULL);
     if(!mysql_real_connect(conn,srv,user,pass,db,port,nixsocket,flag)){
@@ -251,11 +253,11 @@ int main(int argc, char** argv) {
     
     switch(atoi(argv[1])){
         case 1:{//option is used when a client with a token wants to register into our db.
-            if(!(strlen(argv[2])<=255 && strlen(argv[2])>=8)){fprintf(stdout,"0Need token,please auth\n");break;}
+            if(!(strlen(argv[2])<=255 && strlen(argv[2])>=8)){_debugd("0Need token,please auth\n");break;}
             char buffer[STRING_SIZE];
             memset(buffer,0,STRING_SIZE);
             if(regSol(argv[2],conn,buffer)!=NULL){
-                _debugd("2REGISTED;%s\n",buffer);
+                _debugd("1REGISTED;%s\n",buffer);
                 return 0;
             }
             else{
@@ -286,21 +288,49 @@ int main(int argc, char** argv) {
             break;
         }
         case 2:{//option is used to auth a client into our db. ;)
+            //reg mechanism: 2 IPv4 Port
+            //shouldn't this have any user pass mechanism? for test is k. 
+            if(argc!=4){
+                _debugd("0Provide with the correct params\n");
+                exit(1);
+            }
+            uint32_t IPADDR=strtol(argv[2],0,10);
+            uint16_t PORT=strtol(argv[3],0,10);
             
+            /*
+             * PROBLEM ON THIS VALIDATION
+             */
+            switch(isAClient(conn,IPADDR,PORT)){
+                case 0:
+                {
+                    //proceed to auth into db
+                    char token[STRING_SIZE];
+                    if(db_authClient(conn,IPADDR,PORT,token)){
+                        _debugd("2Token:%s\n",token);
+                    }else{
+                        //ups
+                    }
+                    break;
+                }
+                case 1:{
+                    _debugd("1You are already in\n");break;
+                    
+                }
+                default:
+                {
+                    _debugd("0Not valid\n");
+                    break;
+                }
+            }
             break;
         }
         case 3:{
-            //it is authed and wants to register
+            //it is authed and wants to register -- isn't 1 the same? :/
             break;
         }
         default:
             _debugd("0Error, invalid argument %s\n",argv[1]);
             break;
-    }
-    
-    if(atoi(argv[1])==1 && (strlen(argv[2])<=255 && strlen(argv[2])>=8)){
-        
-        
     }
     mysql_close(conn);
     return 0;

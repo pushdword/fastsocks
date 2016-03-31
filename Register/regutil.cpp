@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 #include "regutil.h"
+#include "regmacros.h"
 #include "debug.h"
 
 #include <time.h>
@@ -142,7 +143,6 @@ char* isTokenExists(MYSQL *conn,char *token){
     strncpy(ret,result_data,strlen(result_data)+1);
     return ret;
 }
-
 int isRegExist(char *regnr,MYSQL *conn){
     MYSQL_STMT *stmt;
     MYSQL_BIND param[1];
@@ -182,7 +182,7 @@ int isRegExist(char *regnr,MYSQL *conn){
     }
     
     /* Specify the parameter that we send to the query */
-    strncpy(reg_query, regnr, STRING_SIZE);
+    strncpy(reg_query, regnr, REG_SIZE);
     /* Execute the statement */
     if (mysql_stmt_execute(stmt)) {
       _debugd(" mysql_stmt_execute(), failed\n");
@@ -256,4 +256,147 @@ int db_regClient(char *token,char *regnr,MYSQL *conn){
     int f=mysql_stmt_affected_rows(stmt);
     _debugd("Rows affected:%d\n",f);
     return f;
+}
+int isAClient(MYSQL *conn,uint32_t ip,uint16_t port){
+    MYSQL_STMT *stmt;
+    MYSQL_BIND input[2];
+    
+    char *SQL_Q = "SELECT Count(*) FROM clients WHERE ip = ? AND port = ?";
+    
+    uint32_t ip_in;
+    uint16_t port_in;
+    
+    memset(input,0,sizeof(input));
+    
+    stmt = mysql_stmt_init(conn);
+    if(!stmt){
+        _debugd("mysql_stmt_init(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    
+    input[0].buffer=(void*)&ip_in;
+    input[0].buffer_length=0;
+    input[0].is_null=0;
+    input[0].buffer_type=MYSQL_TYPE_LONG;
+    input[0].is_unsigned=1;
+    
+    input[1].buffer=(void*)&port_in;
+    input[1].buffer_length=0;
+    input[1].is_null=0;
+    input[1].buffer_type=MYSQL_TYPE_SHORT;
+    input[1].is_unsigned=1;
+    
+    if(mysql_stmt_prepare(stmt,SQL_Q,strlen(SQL_Q))){
+        _debugd("mysql_stmt_prepare(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    ip_in=ip;
+    port_in=port;
+    if(mysql_stmt_bind_param(stmt,input)){
+        _debugd("mysql_stmt_bind_param(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    
+    if(mysql_stmt_execute(stmt)){
+        _debugd("mysql_stmt_execute(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    switch(mysql_stmt_fetch(stmt)){
+        case 0:
+            if (mysql_stmt_close(stmt)) {
+                _debugd(" failed while closing the statement\n");
+                _debugd(" %s\n", mysql_stmt_error(stmt));
+                return -1;
+            }
+            return 1;//yes
+            break;
+        case 1:
+            _debugd("mysql_stmt_fetch(), failed\n");
+            _debugd("%s\n", mysql_stmt_error(stmt));
+            return -1;
+        case MYSQL_NO_DATA:
+            _debugd("0MYSQL_NO_DATA\n");
+            return 1;
+        case MYSQL_DATA_TRUNCATED:
+            _debugd("0MYSQL_DATA_TRUNCATED\n");
+            return 1;
+    }
+
+    return -1;
+}
+int db_authClient(MYSQL *conn,uint32_t ip,uint16_t port,char *token){
+    MYSQL_STMT *stmt;
+    MYSQL_BIND input[3];
+    char *SQL_Q = "INSERT INTO clients(Token,ip,port) VALUES(?,?,?)";
+    char token_in[STRING_SIZE];
+    uint64_t token_in_len=STRING_SIZE;
+    uint32_t ip_in;
+    uint16_t port_in;
+    memset(input,0,sizeof(input));
+    stmt = mysql_stmt_init(conn);
+    if(!stmt){
+        _debugd("mysql_stmt_init(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    
+    /*
+     * GenToken
+     */
+    
+    snprintf(token_in,STRING_SIZE,"%u.%u.%u.%u.%u",gen32int(),gen32int(),gen32int(),gen32int(),gen32int());
+    strncpy(token,token_in,STRING_SIZE);
+    
+    input[0].buffer=(void*)&token_in;
+    input[0].buffer_length=STRING_SIZE;
+    input[0].is_null=0;
+    input[0].buffer_type=MYSQL_TYPE_STRING;
+    input[0].length=&token_in_len;
+    
+    input[1].buffer=(void*)&port_in;
+    input[1].buffer_length=0;
+    input[1].is_null=0;
+    input[1].buffer_type=MYSQL_TYPE_LONG;
+    input[1].is_unsigned=1;
+    
+    input[2].buffer=(void*)&port_in;
+    input[2].buffer_length=0;
+    input[2].is_null=0;
+    input[2].buffer_type=MYSQL_TYPE_SHORT;
+    input[2].is_unsigned=1;
+    
+    ip_in=ip;
+    port_in=port;
+    
+    if(mysql_stmt_prepare(stmt,SQL_Q,strlen(SQL_Q))){
+        _debugd("mysql_stmt_prepare(), failed\n");
+        _debugd("%s\nerrno:%d",mysql_stmt_error(stmt),mysql_stmt_errno(stmt));
+        exit(1);
+    }
+
+    if(mysql_stmt_bind_param(stmt,input)){
+        _debugd("mysql_stmt_bind_param(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    
+    if(mysql_stmt_execute(stmt)){
+        _debugd("mysql_stmt_execute(), failed\n");
+        _debugd("%s\n",mysql_stmt_error(stmt));
+        exit(1);
+    }
+    switch(mysql_stmt_affected_rows(stmt)){
+        case 0:
+            return 0;//yes
+            break;
+        case -1:
+            _debugd("mysql_stmt_fetch(), failed\n");
+            _debugd("%s\nErrno:%d\n", mysql_stmt_error(stmt),mysql_stmt_errno(stmt));
+            return -1;
+    }
+    return -1;
 }

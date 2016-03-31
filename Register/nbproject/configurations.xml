@@ -5,6 +5,7 @@
                    displayName="Header Files"
                    projectFiles="true">
       <itemPath>debug.h</itemPath>
+      <itemPath>regmacros.h</itemPath>
       <itemPath>regutil.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -60,6 +61,8 @@
       </item>
       <item path="main.cpp" ex="false" tool="0" flavor2="0">
       </item>
+      <item path="regmacros.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="regutil.cpp" ex="false" tool="0" flavor2="0">
       </item>
       <item path="regutil.h" ex="false" tool="3" flavor2="0">
@@ -90,6 +93,8 @@
       <item path="debug.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="regmacros.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="regutil.cpp" ex="false" tool="1" flavor2="0">
       </item>

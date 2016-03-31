@@ -14,17 +14,13 @@
 #ifndef REGUTIL_H
 #define REGUTIL_H
 
-#ifndef STRING_SIZE 
-    #define STRING_SIZE 256
-#endif
-#ifndef REG_SIZE 
-    #define REG_SIZE 12
-#endif
 #include <mysql/mysql.h>//for structs here
+#include <stdint.h>
 unsigned int gen32int(void);
 int isRegExist(char *regnr,MYSQL *conn);
 char* isTokenExists(MYSQL *conn,char *token);
 int db_regClient(char *token,char *regnr,MYSQL *conn);
-
+int isAClient(MYSQL *conn,uint32_t IPv4Address,uint16_t portNumber);
+int db_authClient(MYSQL *conn,uint32_t ip,uint16_t port,char *token);
 #endif /* REGUTIL_H */
 
