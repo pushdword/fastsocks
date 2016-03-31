@@ -297,10 +297,8 @@ int main(int argc, char** argv) {
             uint32_t IPADDR=strtol(argv[2],0,10);
             uint16_t PORT=strtol(argv[3],0,10);
             
-            /*
-             * PROBLEM ON THIS VALIDATION
-             */
             switch(isAClient(conn,IPADDR,PORT)){
+                case -1:
                 case 0:
                 {
                     //proceed to auth into db
@@ -309,6 +307,8 @@ int main(int argc, char** argv) {
                         _debugd("2Token:%s\n",token);
                     }else{
                         //ups
+                        _debugd("0Error in auth\n");
+                        exit(1);
                     }
                     break;
                 }
@@ -319,6 +319,7 @@ int main(int argc, char** argv) {
                 default:
                 {
                     _debugd("0Not valid\n");
+                    exit(1);
                     break;
                 }
             }

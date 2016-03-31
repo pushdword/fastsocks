@@ -148,7 +148,7 @@ int isRegExist(char *regnr,MYSQL *conn){
     MYSQL_BIND param[1];
     const char *sql;
     char reg_query[REG_SIZE];
-    sql = "SELECT Count(*) FROM `registed` WHERE `REGNR` = ?";
+    sql = "SELECT `REGNR` FROM `registed` WHERE `REGNR` = ?";
     unsigned long reg_len=REG_SIZE;
 
     /* Initialize our statement */
@@ -261,7 +261,7 @@ int isAClient(MYSQL *conn,uint32_t ip,uint16_t port){
     MYSQL_STMT *stmt;
     MYSQL_BIND input[2];
     
-    char *SQL_Q = "SELECT Count(*) FROM clients WHERE ip = ? AND port = ?";
+    char *SQL_Q = "SELECT ip FROM clients WHERE ip = ? AND port = ?";
     
     uint32_t ip_in;
     uint16_t port_in;
@@ -286,14 +286,14 @@ int isAClient(MYSQL *conn,uint32_t ip,uint16_t port){
     input[1].is_null=0;
     input[1].buffer_type=MYSQL_TYPE_SHORT;
     input[1].is_unsigned=1;
-    
+    ip_in=ip;
+    port_in=port;
     if(mysql_stmt_prepare(stmt,SQL_Q,strlen(SQL_Q))){
         _debugd("mysql_stmt_prepare(), failed\n");
         _debugd("%s\n",mysql_stmt_error(stmt));
         exit(1);
     }
-    ip_in=ip;
-    port_in=port;
+
     if(mysql_stmt_bind_param(stmt,input)){
         _debugd("mysql_stmt_bind_param(), failed\n");
         _debugd("%s\n",mysql_stmt_error(stmt));
@@ -320,7 +320,7 @@ int isAClient(MYSQL *conn,uint32_t ip,uint16_t port){
             return -1;
         case MYSQL_NO_DATA:
             _debugd("0MYSQL_NO_DATA\n");
-            return 1;
+            return 0;
         case MYSQL_DATA_TRUNCATED:
             _debugd("0MYSQL_DATA_TRUNCATED\n");
             return 1;
@@ -337,6 +337,7 @@ int db_authClient(MYSQL *conn,uint32_t ip,uint16_t port,char *token){
     uint32_t ip_in;
     uint16_t port_in;
     memset(input,0,sizeof(input));
+    memset(token_in,0,STRING_SIZE);
     stmt = mysql_stmt_init(conn);
     if(!stmt){
         _debugd("mysql_stmt_init(), failed\n");
@@ -349,15 +350,15 @@ int db_authClient(MYSQL *conn,uint32_t ip,uint16_t port,char *token){
      */
     
     snprintf(token_in,STRING_SIZE,"%u.%u.%u.%u.%u",gen32int(),gen32int(),gen32int(),gen32int(),gen32int());
-    strncpy(token,token_in,STRING_SIZE);
+    strncpy(token,token_in,strlen(token_in));
     
     input[0].buffer=(void*)&token_in;
-    input[0].buffer_length=STRING_SIZE;
+    input[0].buffer_length=strlen(token_in);
     input[0].is_null=0;
     input[0].buffer_type=MYSQL_TYPE_STRING;
     input[0].length=&token_in_len;
     
-    input[1].buffer=(void*)&port_in;
+    input[1].buffer=(void*)&ip_in;
     input[1].buffer_length=0;
     input[1].is_null=0;
     input[1].buffer_type=MYSQL_TYPE_LONG;

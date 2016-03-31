@@ -15,7 +15,12 @@
             </df>
           </df>
         </df>
+        <in>debug.cpp</in>
+        <in>debug.h</in>
         <in>main.cpp</in>
+        <in>regmacros.h</in>
+        <in>regutil.cpp</in>
+        <in>regutil.h</in>
       </df>
       <in>fastsocks.h</in>
       <in>main.cpp</in>
