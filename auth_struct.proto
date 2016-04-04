@@ -1,0 +1,40 @@
+syntax = "proto2";
+message authenticate_solicitation{
+	optional int32 header=1;
+	optional string usr=2;
+	optional string pw=3;
+}
+message authenticate_response{
+	optional int32 header=1;
+	optional string token=2;
+}
+message authenticate_acknowledgement{
+	optional int32 header=1;
+	optional string token=2;
+}
+message register_solicitation{
+	optional int32 header=1;
+	optional string token=2;
+}
+message register_response{
+	optional int32 header=1;
+	optional string token=2;
+	optional string regnr=3;
+}
+message connection_solicitation{
+	optional int32 header=1;
+	optional string token=2;
+        optional string regnr=3;
+}
+message connection_response{
+	optional int32 header=1;
+	optional uint32 ip=2;
+	optional uint32 port=3;
+}
+message connection_acknowledgement{
+	optional int32 header=1;
+	optional string token=2;
+	optional uint32 ip=3;
+	optional uint32 port=4;
+
+}

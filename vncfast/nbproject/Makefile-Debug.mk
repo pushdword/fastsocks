@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/auth_struct.pb-c.o \
 	${OBJECTDIR}/fastsocks.o \
 	${OBJECTDIR}/main.o
 
@@ -61,7 +62,12 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast ${OBJECTFILES} ${LDLIBSOPTIONS} -lprotobuf-c
+
+${OBJECTDIR}/auth_struct.pb-c.o: auth_struct.pb-c.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/auth_struct.pb-c.o auth_struct.pb-c.c
 
 ${OBJECTDIR}/fastsocks.o: fastsocks.c 
 	${MKDIR} -p ${OBJECTDIR}

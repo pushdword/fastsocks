@@ -23,7 +23,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "regmacros.h"
+#include "auth_struct.pb-c.h"
 #include "fastsocks.h"
 char token[STRING_SIZE];
 /*
@@ -35,8 +39,8 @@ int main(int argc, char** argv) {
     /*
      *  1 - Connect to server.
      */
-    
-    char *srv="nop.pt"; //testing server
+   
+    char *srv="localhost"; //testing server
     char *port="3434";//for testing
     int fd_s;
     
@@ -47,20 +51,29 @@ int main(int argc, char** argv) {
     /*
      * Send auth_sol packets
      */
-    struct auth_sol atsol;
-    header_type h;
-    atsol.header=h.auth_sol;
-    snprintf(atsol.usr,MAX_FIELD_LEN,"user1");//for testing ofc
-    snprintf(atsol.pw,MAX_FIELD_LEN,"pass1");
-    
+    void *b;
+    unsigned len;
+    struct _AuthenticateSolicitation atsol = AUTHENTICATE_SOLICITATION__INIT;
+    atsol.header=1;
+    atsol.usr = "user1";
+    atsol.pw = "pass1";
+    len = authenticate_solicitation__get_packed_size(&atsol);
+    fprintf(stdout,"INFO:len:%u\n",len);
     fprintf(stdout,"INFO:\tUsing default user and password for testing only\n");
-    
     /*
      * 
      * Researching *need to send struct over a networked fd*
      * 
      */
-    
+    b=malloc(len);
+    authenticate_solicitation__pack(&atsol,b);
+    /*
+     * Ok it works. Now send it via socket :D
+     */
+    send(fd_s,b,len,NULL);
+    fwrite(b,len,1,stdout);
+    free(b);
+    close(fd_s);
     return (EXIT_SUCCESS);
 }
 

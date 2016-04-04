@@ -5,11 +5,16 @@
  *
  * Created on March 26, 2016, 10:15 PM
  */
-#include <stdint.h>
+
 
 #ifndef FASTSOCKS_H
 #define FASTSOCKS_H
-
+#include <stdint.h>
+#ifndef REGMACROS_H
+#include "../Register/regmacros.h"
+#endif
+int bind_local(const char *addr,const char *port);
+int init_fastsocks(const char *remote_host, const char *remote_port);
 /*
  
  *We have a server running a spacial service. We call it VNC Repeater.
@@ -30,7 +35,8 @@
  * talks to this service with header tokens like in HTTP protocol.
  * I must find a way to encrypt everything. 
  */
-
+#define MAX_FIELD_LEN 32
+/*
 enum header_type{
     reg_sol, //register solicitation -- must be client
     reg_res, //register response -- only the server can send
@@ -41,50 +47,57 @@ enum header_type{
     
     conn_sol, //caller solicitation - wants to connect to client with reg number
     conn_res, //server response to the solicitation.
-    conn_ack //caller acknowledgment to the response if response its ACCEPTED (1).
-};
+    conn_ack, //caller acknowledgment to the response if response its ACCEPTED (1).
 
+};
+*/
 
-struct reg_sol{
-    header_type header; //what header is this.
-    int32_t token; //random token by client.
-};
-struct reg_res{
-    header_type header; //what header is this.
-    int32_t token; //if the same it's registed ok
-    uint32_t reg; //registation number. it will be for dotted number.
-};
-struct reg_ack{
-    header_type header; //what header is this.
-    int32_t token; //end again the same token.
-    uint32_t reg; //must send again the same reg number.
-};
-struct auth_sol{
-    header_type header; //what header is this.
-    char usr[32];
-    char pw[32];
-};
-struct auth_ack{
-    header_type header; //what header is this.
-    int32_t token; //use this to talk with server.
-};
-struct conn_sol{
-    header_type header; //what header is this.
-    int32_t token; //auth token.
-    uint32_t reg; //who the caller wants to connect to
-    
-};
-struct conn_res{
-    header_type header; //what header is this.
+typedef struct _reg_sol{
+    char header; //what header is this.
+    char token[STRING_SIZE]; //random token by client.
+}reg_sol;
+
+typedef struct _reg_res{
+    char header; //what header is this.
+    char token[STRING_SIZE]; //if the same it's registed ok
+    char reg[STRING_SIZE]; //registation number. it will be for dotted number.
+}reg_res;
+
+typedef struct _reg_ack{
+    char header; //what header is this.
+    char token[STRING_SIZE]; //end again the same token.
+    char reg[STRING_SIZE]; //must send again the same reg number.
+}reg_ack;
+
+typedef struct _auth_sol{
+    char header; //what header is this.
+    char usr[MAX_FIELD_LEN];
+    char pw[MAX_FIELD_LEN];
+}auth_sol;
+
+typedef struct _auth_ack{
+    char header; //what header is this.
+    char token[STRING_SIZE]; //use this to talk with server.
+}auth_ack;
+
+typedef struct _conn_sol{
+    char header; //what header is this.
+    char token[STRING_SIZE]; //auth token.
+    char reg[STRING_SIZE]; //who the caller wants to connect to
+}conn_sol;
+
+typedef struct _conn_res{
+    char header; //what header is this.
     uint32_t ip; //connect to this IP
     uint16_t port; //and to this port in order to connect
-};
-struct conn_ack{
-    header_type header; //what header is this.
-    int32_t token;
+}conn_res;
+
+typedef struct _conn_ack{
+    char header; //what header is this.
+    char token[STRING_SIZE];
     uint32_t ip; //connecting to this ip
     uint16_t port; //to this port.
-};
+}conn_ack;
 
 #ifdef __cplusplus
 extern "C" {
