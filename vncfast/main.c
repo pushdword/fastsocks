@@ -29,6 +29,12 @@
 #include "regmacros.h"
 #include "auth_struct.pb-c.h"
 #include "fastsocks.h"
+/* OpenSSL headers */
+
+#include "openssl/bio.h"
+#include "openssl/ssl.h"
+#include "openssl/err.h"
+
 char token[STRING_SIZE];
 /*
  * 
@@ -36,25 +42,26 @@ char token[STRING_SIZE];
 
 
 int main(int argc, char** argv) {
+    SSL_load_error_strings();
+    ERR_load_BIO_strings();
+    OpenSSL_add_all_algorithms();
     /*
      *  1 - Connect to server.
      */
-   
-    char *srv="localhost"; //testing server
-    char *port="3434";//for testing
-    int fd_s;
+    BIO * bio;
     
-    fd_s=init_fastsocks(srv,port);
-    if(fd_s==-1){
-        exit(1);
-    }
+    bio=init_fastsocks("127.0.0.1:3434");
+    
+    
+    
     /*
      * Send auth_sol packets
      */
     void *b;
     unsigned len;
     struct _AuthenticateSolicitation atsol = AUTHENTICATE_SOLICITATION__INIT;
-    atsol.header=1;
+    atsol.header=200;
+    atsol.has_header=1;
     atsol.usr = "user1";
     atsol.pw = "pass1";
     len = authenticate_solicitation__get_packed_size(&atsol);
@@ -70,10 +77,11 @@ int main(int argc, char** argv) {
     /*
      * Ok it works. Now send it via socket :D
      */
-    send(fd_s,b,len,NULL);
+    BIO_write(bio,b,len);
     fwrite(b,len,1,stdout);
     free(b);
-    close(fd_s);
+    BIO_reset(bio);
+    BIO_free_all(bio);
     return (EXIT_SUCCESS);
 }
 

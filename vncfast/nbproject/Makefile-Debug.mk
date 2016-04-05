@@ -62,7 +62,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast ${OBJECTFILES} ${LDLIBSOPTIONS} -lprotobuf-c
+	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/vncfast ${OBJECTFILES} ${LDLIBSOPTIONS} -lprotobuf-c -lcrypto -lssl
 
 ${OBJECTDIR}/auth_struct.pb-c.o: auth_struct.pb-c.c 
 	${MKDIR} -p ${OBJECTDIR}

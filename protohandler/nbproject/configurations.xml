@@ -44,7 +44,7 @@
       </toolsSet>
       <compileType>
         <linkerTool>
-          <commandLine>-lprotobuf-c</commandLine>
+          <commandLine>-lprotobuf-c -lssl -lcrypto</commandLine>
         </linkerTool>
       </compileType>
       <item path="/home/int3/fastsocks/auth_struct.proto"

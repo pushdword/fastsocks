@@ -13,8 +13,12 @@
 #ifndef REGMACROS_H
 #include "../Register/regmacros.h"
 #endif
-int bind_local(const char *addr,const char *port);
-int init_fastsocks(const char *remote_host, const char *remote_port);
+#include <openssl/err.h>
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+
+BIO* bind_local(char* port);
+BIO* init_fastsocks(char*host_port);
 /*
  
  *We have a server running a spacial service. We call it VNC Repeater.

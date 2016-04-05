@@ -17,23 +17,39 @@
 #include "../Register/regmacros.h"
 #include "fastsocks.h"
 #include "auth_struct.pb-c.h"
+/* OpenSSL headers */
+
+#include <openssl/bio.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+/* Initializing OpenSSL */
+
+
 
 /*
  * 
  */
 int main(int argc, char** argv) {
-    int sfd=bind_local("127.0.0.1","3434");
+    SSL_load_error_strings();
+    ERR_load_BIO_strings();
+    OpenSSL_add_all_algorithms();
+    BIO* bio,*cbio;
     
     struct _AuthenticateSolicitation *atsol;
-    void *buffer = malloc(14);
-    int drev = recv(sfd,buffer,14,NULL);
+    void *buffer = malloc(512);
+    int drev;
+    bio=bind_local("3434");
+    cbio = BIO_pop(bio);
+    
+    drev = BIO_read(bio,buffer,512);
+    assert(drev>=0);
     fprintf(stdout,"recv:%d\n",drev);
-    atsol=authenticate_solicitation__unpack(NULL,14,buffer);
-    fprintf(stdout,"header:%d\nusername:%s\npassword:%s\n",atsol->header,atsol->usr,atsol->pw);
-    
-    //fwrite(buffer,14,1,stdout);
-    
-    
+    atsol=authenticate_solicitation__unpack(NULL,drev,buffer);
+    if(atsol->has_header==1)
+        fprintf(stdout,"header:%d\n",atsol->header);
+    fprintf(stdout,"username:%s\npassword:%s\n",atsol->usr,atsol->pw);
+
     
     free(buffer);
     return (EXIT_SUCCESS);
