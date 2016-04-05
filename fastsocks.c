@@ -17,8 +17,22 @@
 
 BIO * init_fastsocks(char* host_port)
 {
+/*
+    SSL_library_init();
+    SSL_CTX * ctx = SSL_CTX_new(SSLv23_client_method());
+    SSL * ssl;
+    if(! SSL_CTX_load_verify_locations(ctx, NULL, "/etc/ssl/certs/"))
+    {
+        perror("couldn't load certificate!\n");
+        exit(1);
+    }
+    
     BIO *bio;
-    bio = BIO_new_connect(host_port);
+    bio = BIO_new_ssl_connect(ctx);
+    BIO_get_ssl(bio, & ssl);
+    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
+    BIO_set_conn_hostname(bio, host_port);
+
     if(bio == NULL)
     {
         perror("BIO_new_connect() to ");
@@ -31,8 +45,54 @@ BIO * init_fastsocks(char* host_port)
         perror("BIO_do_connect()\n");
         exit(1);
     }
+*/
+     BIO *sbio, *out;
+     SSL_CTX *ctx;
+     SSL *ssl;
+
+     /* We would seed the PRNG here if the platform didn't
+      * do it automatically
+      */
+     SSL_library_init();
+     ctx = SSL_CTX_new(SSLv23_client_method());
+
+     /* We'd normally set some stuff like the verify paths and
+      * mode here because as things stand this will connect to
+      * any server whose certificate is signed by any CA.
+      */
+
+     sbio = BIO_new_ssl_connect(ctx);
+
+     BIO_get_ssl(sbio, &ssl);
+
+     if(!ssl) {
+       fprintf(stderr, "Can't locate SSL pointer\n");
+       /* whatever ... */
+       exit(1);
+     }
+
+     /* Don't want any retries */
+     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
+
+     /* We might want to do other things with ssl here */
+
+     /* An empty host part means the loopback address */
+     BIO_set_conn_hostname(sbio, host_port);
+
+     out = BIO_new_fp(stdout, BIO_NOCLOSE);
+     if(BIO_do_connect(sbio) <= 0) {
+            fprintf(stderr, "Error connecting to server\n");
+            ERR_print_errors_fp(stderr);
+            /* whatever ... */
+     }
+
+     if(BIO_do_handshake(sbio) <= 0) {
+            fprintf(stderr, "Error establishing SSL connection\n");
+            ERR_print_errors_fp(stderr);
+            /* whatever ... */
+     }
     
-    return bio;
+    return sbio;
 }
 
 BIO* bind_local(char* port){
