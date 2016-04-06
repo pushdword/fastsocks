@@ -26,6 +26,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #include "regmacros.h"
 #include "auth_struct.pb-c.h"
 #include "fastsocks.h"
@@ -48,25 +49,19 @@ int main(int argc, char** argv) {
     /*
      *  1 - Connect to server.
      */
-    BIO * bio;
-    
+    BIO * bio;    
     bio=init_fastsocks("127.0.0.1:3434");
-    
-    
-    
     /*
      * Send auth_sol packets
      */
     void *b;
     unsigned len;
     struct _AuthenticateSolicitation atsol = AUTHENTICATE_SOLICITATION__INIT;
-    atsol.header=200;
+    atsol.header=0x1; //sol
     atsol.has_header=1;
-    atsol.usr = "user1";
-    atsol.pw = "pass1";
+    atsol.usr = "istoeumutilizadormaior";
+    atsol.pw = "p!aSDskaqWEsnaqwendkDAS";
     len = authenticate_solicitation__get_packed_size(&atsol);
-    fprintf(stdout,"INFO:len:%u\n",len);
-    fprintf(stdout,"INFO:\tUsing default user and password for testing only\n");
     /*
      * 
      * Researching *need to send struct over a networked fd*
@@ -78,8 +73,11 @@ int main(int argc, char** argv) {
      * Ok it works. Now send it via socket :D
      */
     BIO_write(bio,b,len);
-    fwrite(b,len,1,stdout);
     free(b);
+    //now we wait for the response.
+    waitForToken();
+    
+    //wait.
     BIO_reset(bio);
     BIO_free_all(bio);
     return (EXIT_SUCCESS);

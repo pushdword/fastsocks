@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include "../Register/regmacros.h"
+#include "regmacros.h"
 #include "fastsocks.h"
 #include "auth_struct.pb-c.h"
 /* OpenSSL headers */
@@ -25,7 +25,34 @@
 
 /* Initializing OpenSSL */
 
-
+void _dumpbuffer(void*data,size_t size){
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+    for (i = 0; i < size; ++i) {
+        printf("%02X ", ((unsigned char*)data)[i]);
+        if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+            ascii[i % 16] = ((unsigned char*)data)[i];
+        } else {
+            ascii[i % 16] = '.';
+        }
+        if ((i+1) % 8 == 0 || i+1 == size) {
+            printf(" ");
+            if ((i+1) % 16 == 0) {
+                printf("|  %s \n", ascii);
+            } else if (i+1 == size) {
+                ascii[(i+1) % 16] = '\0';
+                if ((i+1) % 16 <= 8) {
+                    printf(" ");
+                }
+                for (j = (i+1) % 16; j < 16; ++j) {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
+    }
+}
 
 /*
  * 
@@ -40,17 +67,13 @@ int main(int argc, char** argv) {
     void *buffer = malloc(512);
     int drev;
     bio=bind_local("3434");
-    cbio = BIO_pop(bio);
-    
     drev = BIO_read(bio,buffer,512);
-    assert(drev>=0);
-    fprintf(stdout,"recv:%d\n",drev);
+    assert(drev>0);
     atsol=authenticate_solicitation__unpack(NULL,drev,buffer);
     if(atsol->has_header==1)
         fprintf(stdout,"header:%d\n",atsol->header);
-    fprintf(stdout,"username:%s\npassword:%s\n",atsol->usr,atsol->pw);
-
-    
+    fprintf(stdout,"username:%s\npassword:%s\n\n\n",atsol->usr,atsol->pw);
+    _dumpbuffer(buffer,drev);
     free(buffer);
     return (EXIT_SUCCESS);
 }

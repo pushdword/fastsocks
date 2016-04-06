@@ -20,6 +20,7 @@
         <in>fastsocks.c</in>
         <in>fastsocks.h</in>
         <in>main.c</in>
+        <in>regmacros.h</in>
       </df>
       <df name="Register">
         <df name="build">
@@ -66,6 +67,7 @@
       <in>fastsocks.c</in>
       <in>fastsocks.h</in>
       <in>main.cpp</in>
+      <in>regmacros.h</in>
       <in>socks5.h</in>
     </df>
   </logicalFolder>

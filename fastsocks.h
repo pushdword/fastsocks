@@ -11,7 +11,7 @@
 #define FASTSOCKS_H
 #include <stdint.h>
 #ifndef REGMACROS_H
-#include "../Register/regmacros.h"
+#include "regmacros.h"
 #endif
 #include <openssl/err.h>
 #include <openssl/bio.h>

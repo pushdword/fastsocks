@@ -7,8 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include "fastsocks.h"
+#include "auth_struct.pb-c.h"
 #include <openssl/err.h>
 #include <openssl/bio.h>
 #include <openssl/ssl.h> //missing TLS_server_method *
@@ -54,7 +56,7 @@ BIO * init_fastsocks(char* host_port)
       * do it automatically
       */
      SSL_library_init();
-     ctx = SSL_CTX_new(SSLv23_client_method());
+     ctx = SSL_CTX_new(TLSv1_2_client_method());
 
      /* We'd normally set some stuff like the verify paths and
       * mode here because as things stand this will connect to
@@ -118,15 +120,18 @@ BIO* bind_local(char* port){
     return bio;
 */
     
-    BIO *sbio, *bbio, *acpt, *out;
-    int len;
-    char tmpbuf[1024];
+    BIO *sbio, //server bio
+        *bbio, //buffer bio
+        *acpt, //accept bio
+        *out; //out? bio
+    
     SSL_CTX *ctx;
+    
     SSL *ssl;
 
     /* Might seed PRNG here */
     SSL_library_init();
-    ctx = SSL_CTX_new(SSLv23_server_method()); //help here. TLS_server_method undefined. :(
+    ctx = SSL_CTX_new(TLSv1_2_server_method()); //help here. TLS_server_method undefined. :(
 
     if (!SSL_CTX_use_certificate_file(ctx,"/etc/ssl/certs/server.pem",SSL_FILETYPE_PEM)
            || !SSL_CTX_use_PrivateKey_file(ctx,"/etc/ssl/protohandler.pem",SSL_FILETYPE_PEM) //meh I did generate it and encrypt. :/
@@ -171,7 +176,7 @@ BIO* bind_local(char* port){
 
     BIO_set_accept_bios(acpt,sbio);
 
-    out = BIO_new_fp(stdout, BIO_NOCLOSE);
+    out = BIO_new_fp(stdout, BIO_NOCLOSE); //if you write to out is the same as writing into stdout
 
     /* Setup accept BIO */
     if(BIO_do_accept(acpt) <= 0) {
@@ -194,11 +199,34 @@ BIO* bind_local(char* port){
     sbio = BIO_pop(acpt);
 
     BIO_free_all(acpt);
-
+    
+    //server bio do the handshake to the clients.
     if(BIO_do_handshake(sbio) <= 0) {
            fprintf(stderr, "Error in SSL handshake\n");
            ERR_print_errors_fp(stderr);
            exit(1);
     }
-    return sbio;
+    return sbio; //should it?
+}
+
+char *waitForToken(BIO* sbio){
+    int correct=0;
+    while(!correct){
+        struct _AuthenticateResponse *atres;
+        void *buffer = malloc(512);
+        int drev;
+        drev = BIO_read(sbio,buffer,512);
+        assert(drev>0);
+        atres = authenticate_response__unpack(NULL,drev,buffer);
+        /*
+         * checkup for protocol
+         */
+        if(atres->has_header!=1){
+            continue;//must have header.
+        }
+        //ok if it has
+        if(atres->header==0x2){ //if is a response
+            return atres->token;
+        }
+    }
 }
