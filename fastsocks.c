@@ -13,7 +13,7 @@
 #include "auth_struct.pb-c.h"
 #include <openssl/err.h>
 #include <openssl/bio.h>
-#include <openssl/ssl.h> //missing TLS_server_method *
+#include <openssl/ssl.h> //using TLSv1_2
 
 #define BACKLOG  10 
 
