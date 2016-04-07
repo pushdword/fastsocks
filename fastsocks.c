@@ -209,6 +209,7 @@ BIO* bind_local(char* port){
     return sbio; //should it?
 }
 
+// STOPPED HERE. CONTINUE TOMOROW
 char *waitForToken(BIO* sbio){
     int correct=0;
     while(!correct){
