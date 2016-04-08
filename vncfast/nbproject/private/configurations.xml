@@ -13,6 +13,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -25,8 +27,12 @@
       <runprofile version="9">
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -r 127.0.0.1 -p 3434 -l 127.0.0.1 -i</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -r 127.0.0.1 -p 3434 -l 127.0.0.1 -p pass</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -r 127.0.0.1 -p 3434 -l 127.0.0.1 -f pass</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -r 127.0.0.1 -p 3434 -l 127.0.0.1 -f ./pass</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <runcommand>"${OUTPUT_PATH}" -r 127.0.0.1 -p 3434 -l 127.0.0.1 -f ./pass</runcommand>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

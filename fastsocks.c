@@ -217,6 +217,7 @@ char *waitForToken(BIO* sbio){
         void *buffer = malloc(512);
         int drev;
         drev = BIO_read(sbio,buffer,512);
+        _debugi("read:%d\n",drev);
         assert(drev>0);
         atres = authenticate_response__unpack(NULL,drev,buffer);
         /*

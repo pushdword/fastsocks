@@ -20,7 +20,11 @@
 #ifndef REG_SIZE 
     #define REG_SIZE 12
 #endif
-
-
+#ifndef _debugd
+#define _debugd(fmt, args...) fprintf(stderr, fmt, ##args);
+#endif
+#ifndef _debugi
+#define _debugi(fmt, args...) fprintf(stdout, fmt, ##args);
+#endif
 #endif /* REGMACROS_H */
 

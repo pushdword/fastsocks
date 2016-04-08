@@ -21,8 +21,7 @@
  * Created on March 31, 2016, 10:37 PM
  */
 #define vncfast_ver "1.01"
-#define _debugd(fmt, args...) fprintf(stderr, fmt, ##args);
-#define _debugi(fmt, args...) fprintf(stdout, fmt, ##args);
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,8 +76,9 @@ int main(int argc, char** argv) {
     uint32_t rport=0;
     short rflag=0,pflag=0,lflag=0,fflag=0,iflag=0;
     opterr = 0;
-    int c=0,ffile;
-    while ((c = getopt (argc, argv, "r:p:l:f:i:")) != -1){
+    int c=0;
+    FILE* ffile;
+    while ((c = getopt (argc, argv, "r:p:l:f:i")) != -1){
       switch (c)
        {
             case 'r':{
@@ -107,20 +107,23 @@ int main(int argc, char** argv) {
               break;
             }
           case 'f':{
-              ffile=open(optarg,O_RDONLY);
-              if(ffile>0){
+              ffile=fopen(optarg,"r");
+              if(ffile<=0){
                   perror("open()");
-                  _debugd("Enter a valid file path\n");
+                  char b[100];
+                  getcwd(b,100);
+                  _debugd("%s is invalid at %s\nEnter a valid file path\n",optarg,b);
                   usage();
                   return 1;
               }
-              char line[STRING_SIZE];
-              if(!fgets(line,STRING_SIZE,ffile)){
+              char up[STRING_SIZE];
+              memset(up,0,STRING_SIZE);
+              if(!fgets(up,STRING_SIZE,ffile)){
                   _debugd("%s seems to be empty\n",optarg);
                   return 1;
               }
               int ar=0;
-              char *token=strtok(line,":");
+              char *token=strtok(up,":");
               if(token==NULL){
                   _debugd("%s has errors\n",optarg);
                   return 1;
@@ -165,10 +168,11 @@ int main(int argc, char** argv) {
                     perror("tcsetattr");
                     return EXIT_FAILURE;
                 }
+                iflag=1;
                 break;
           }
           case '?':{
-                _debugd("Invalid argument: %s\n",optarg);
+                _debugd("Invalid argument: %c\n",c);
                 return 1;
                 break;
             }
@@ -236,7 +240,8 @@ int main(int argc, char** argv) {
     BIO_write(bio,b,len);
     free(b);
     //now we wait for the response.
-    waitForToken();
+    char *token=waitForToken(bio);
+    _debugi("INFO:Token:%s\n",token);
     
     //wait.
     BIO_reset(bio);
