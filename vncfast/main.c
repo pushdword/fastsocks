@@ -240,8 +240,10 @@ int main(int argc, char** argv) {
     BIO_write(bio,b,len);
     free(b);
     //now we wait for the response.
+/*
     char *token=waitForToken(bio);
     _debugi("INFO:Token:%s\n",token);
+*/
     
     //wait.
     BIO_reset(bio);

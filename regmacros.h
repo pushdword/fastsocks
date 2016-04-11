@@ -13,7 +13,7 @@
 
 #ifndef REGMACROS_H
 #define REGMACROS_H
-
+#define MAX_FIELD_LEN 32
 #ifndef STRING_SIZE 
     #define STRING_SIZE 255
 #endif

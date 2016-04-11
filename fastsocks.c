@@ -97,41 +97,48 @@ BIO * init_fastsocks(char* host_port)
     return sbio;
 }
 
-BIO* bind_local(char* port){
-/*
-    SSL_CTX * ctx = SSL_CTX_new(SSLv23_client_method());
-    SSL * ssl;
-    if(! SSL_CTX_load_verify_locations(ctx, NULL, "/etc/ssl/certs/"))
-    {
-        perror("couldn't load certificate!\n");
-        exit(1);
+
+void _dumpbuffer(void*data,size_t size){
+    char ascii[17];
+    size_t i, j;
+    ascii[16] = '\0';
+    for (i = 0; i < size; ++i) {
+        printf("%02X ", ((unsigned char*)data)[i]);
+        if (((unsigned char*)data)[i] >= ' ' && ((unsigned char*)data)[i] <= '~') {
+            ascii[i % 16] = ((unsigned char*)data)[i];
+        } else {
+            ascii[i % 16] = '.';
+        }
+        if ((i+1) % 8 == 0 || i+1 == size) {
+            printf(" ");
+            if ((i+1) % 16 == 0) {
+                printf("|  %s \n", ascii);
+            } else if (i+1 == size) {
+                ascii[(i+1) % 16] = '\0';
+                if ((i+1) % 16 <= 8) {
+                    printf(" ");
+                }
+                for (j = (i+1) % 16; j < 16; ++j) {
+                    printf("   ");
+                }
+                printf("|  %s \n", ascii);
+            }
+        }
     }
-    
-    BIO *bio;
-    bio = BIO_new_ssl(ctx);
-    BIO_get_ssl(bio, & ssl);
-    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
-    bio = BIO_new_accept(port);
-     if(BIO_do_accept(bio) <= 0) {
-            fprintf(stderr, "Error accepting connection\n");
-            ERR_print_errors_fp(stderr);
-            exit(0);                
-     }
-    return bio;
-*/
-    
+}
+
+
+BIO* bind_local(char* port){
     BIO *sbio, //server bio
         *bbio, //buffer bio
         *acpt, //accept bio
         *out; //out? bio
-    
     SSL_CTX *ctx;
-    
     SSL *ssl;
 
     /* Might seed PRNG here */
     SSL_library_init();
-    ctx = SSL_CTX_new(TLSv1_2_server_method()); //help here. TLS_server_method undefined. :(
+    ctx = SSL_CTX_new(TLSv1_2_server_method()); 
 
     if (!SSL_CTX_use_certificate_file(ctx,"/etc/ssl/certs/server.pem",SSL_FILETYPE_PEM)
            || !SSL_CTX_use_PrivateKey_file(ctx,"/etc/ssl/protohandler.pem",SSL_FILETYPE_PEM) //meh I did generate it and encrypt. :/
@@ -185,21 +192,18 @@ BIO* bind_local(char* port){
            return 0;
     }
 
-    /* Now wait for incoming connection */
+/* Now wait for incoming connection */
     if(BIO_do_accept(acpt) <= 0) {
            fprintf(stderr, "Error in connection\n");
            ERR_print_errors_fp(stderr);
            return 0;
     }
-
     /* We only want one connection so remove and free
      * accept BIO
      */
-
     sbio = BIO_pop(acpt);
-
     BIO_free_all(acpt);
-    
+
     //server bio do the handshake to the clients.
     if(BIO_do_handshake(sbio) <= 0) {
            fprintf(stderr, "Error in SSL handshake\n");
