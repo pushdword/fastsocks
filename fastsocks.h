@@ -57,10 +57,10 @@ void _dumplist_ctx(listctx_t *list);
 void _dumplist_threads(listthreads_t *list);
 void _dumplist_ssl(listssl_t *list);
 
-int addbiolist(listbio_t *list);
-int addctxlist(listbio_t *list);
-int addthreadlist(listbio_t *list);
-int addssllist(listssl_t* list);
+int addbiolist(listbio_t *list,BIO*);
+int addctxlist(listbio_t *list,SSL_CTX*);
+int addthreadlist(listbio_t *list,pthread_t);
+int addssllist(listssl_t* list,SSL*);
 
 int removebiolistbyindex(listbio_t *list,int index);
 int removectxlistbyindex(listctx_t *list,int index);

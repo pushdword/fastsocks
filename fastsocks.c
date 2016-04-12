@@ -17,6 +17,157 @@
 
 #define BACKLOG  10 
 
+//need these functions
+void _dumplist_bio(listbio_t *list){
+    
+}
+void _dumplist_ctx(listctx_t *list){
+    
+}
+
+void _dumplist_threads(listthreads_t *list){
+    
+}
+
+void _dumplist_ssl(listssl_t *list){
+    
+}
+
+int addbiolist(listbio_t *list,BIO* b){
+    listbio_t *current = list;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = malloc(sizeof(listbio_t));
+    current->next->b = b;
+    current->next->next = NULL;
+}
+
+int addctxlist(listbio_t *list,SSL_CTX* ctx){
+    listbio_t *current = list;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = malloc(sizeof(listbio_t));
+    current->next->b = ctx;
+    current->next->next = NULL;
+}
+
+int addthreadlist(listbio_t *list, pthread_t t){
+    listbio_t *current = list;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = malloc(sizeof(listbio_t));
+    current->next->b = t;
+    current->next->next = NULL;
+}
+
+int addssllist(listssl_t* list,SSL* ssl){
+    listbio_t *current = list;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = malloc(sizeof(listbio_t));
+    current->next->b = ssl;
+    current->next->next = NULL;
+}
+
+BIO* popbiolist(listbio_t ** head) {
+    BIO* retval = NULL;
+    listbio_t * next_node = NULL;
+    if (*head == NULL) {
+        return -1;
+    }
+    next_node = (*head)->next;
+    retval = (*head)->b;
+    free(*head);
+    *head = next_node;
+    return retval;
+}
+
+int removebiolistbyindex(listbio_t *list,int index){
+    int i = 0;
+    BIO* retval = NULL;
+    listbio_t * current = *list;
+    listbio_t * temp_node = NULL;
+    if (index == 0) {
+        return pop(head);
+    }
+
+    for (int i = 0; i < index-1; i++) {
+        if (current->next == NULL) {
+            return -1;
+        }
+        current = current->next;
+    }
+    temp_node = current->next;
+    retval = temp_node->b;
+    current->next = temp_node->next;
+    free(temp_node);
+    return retval;
+}
+
+int removectxlistbyindex(listctx_t *list,int index){
+    
+}
+
+int removethreadlistbyindex(listthreads_t *list,int index){
+    
+}
+
+int removessllistbyindex(listssl_t *list,int index){
+    
+}
+
+int insertbiolist(listbio_t *list,int index){
+    
+}
+
+int insertctxlist(listctx_t *list,int index){
+    
+}
+
+int insertthreadlist(listthreads_t *list,int index){
+    
+}
+
+int insertssllist(listssl_t *list,int index){
+    
+}
+
+listbio_t* getbiolistbyindex(listbio_t *list,int index){
+    
+}
+
+listctx_t* getctxlistbyindex(listctx_t *list,int index){
+    
+}
+
+listthreads_t* getthreadlistbyindex(listthreads_t *list,int index){
+    
+}
+
+listssl_t* getssllistbyindex(listssl_t *list,int index){
+    
+}
+
+BIO* getbiobyindex(listbio_t *list,int index){
+    
+}
+
+SSL_CTX* getctxbyindex(listctx_t *list,int index){
+    
+}
+
+pthread_t getthreadbyindex(listthreads_t *list,int index){
+    
+}
+
+SSL* getsslbyindex(listssl_t *list,int index){
+    
+}
+
 BIO * init_fastsocks(char* host_port)
 {
 /*
