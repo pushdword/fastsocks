@@ -4,8 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>auth_struct.pb-c.h</itemPath>
-      <itemPath>fastsocks.h</itemPath>
+      <itemPath>socksprotocol/auth_struct.pb.h</itemPath>
+      <itemPath>/home/int3/fastsocks/fastsocks.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -15,9 +15,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>auth_struct.pb-c.c</itemPath>
-      <itemPath>fastsocks.c</itemPath>
-      <itemPath>main.c</itemPath>
+      <itemPath>socksprotocol/auth_struct.pb.cc</itemPath>
+      <itemPath>/home/int3/fastsocks/fastsocks.cc</itemPath>
+      <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -52,15 +52,15 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="auth_struct.pb-c.c" ex="false" tool="0" flavor2="0">
+      <item path="/home/int3/fastsocks/fastsocks.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="auth_struct.pb-c.h" ex="false" tool="3" flavor2="0">
+      <item path="/home/int3/fastsocks/fastsocks.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="fastsocks.c" ex="false" tool="0" flavor2="0">
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="fastsocks.h" ex="false" tool="3" flavor2="0">
+      <item path="socksprotocol/auth_struct.pb.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="main.c" ex="false" tool="0" flavor2="0">
+      <item path="socksprotocol/auth_struct.pb.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -88,15 +88,15 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="auth_struct.pb-c.c" ex="false" tool="0" flavor2="0">
+      <item path="/home/int3/fastsocks/fastsocks.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="auth_struct.pb-c.h" ex="false" tool="3" flavor2="0">
+      <item path="/home/int3/fastsocks/fastsocks.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="fastsocks.c" ex="false" tool="0" flavor2="0">
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="fastsocks.h" ex="false" tool="3" flavor2="0">
+      <item path="socksprotocol/auth_struct.pb.cc" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="main.c" ex="false" tool="0" flavor2="0">
+      <item path="socksprotocol/auth_struct.pb.h" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

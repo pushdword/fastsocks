@@ -21,8 +21,8 @@ message register_response{
 	optional string token=2;
 	optional string regnr=3;
 }
-message connection_solicitation{
-	optional int32 header=1;
+message connection_solicitation
+{	optional int32 header=1;
 	optional string token=2;
         optional string regnr=3;
 }

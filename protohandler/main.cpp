@@ -5,7 +5,7 @@
  */
 
 /* 
- * File:   main.c
+ * File:   main.cpp
  * Author: pushdword
  *
  * Created on April 3, 2016, 11:59 PM
@@ -16,7 +16,7 @@
 #include <sys/socket.h>
 #include "regmacros.h"
 #include "fastsocks.h"
-#include "auth_struct.pb-c.h"
+#include "socksprotocol/auth_struct.pb.h"
 /* OpenSSL headers */
 
 #include <openssl/bio.h>
@@ -36,7 +36,7 @@ int processClient(BIO* clientbio){
     drev = BIO_read(clientbio,buffer,512);
     if(drev<=0)
         exit(0);
-    atsol=authenticate_solicitation__unpack(NULL,drev,buffer);
+    atsol=authenticate_solicitation__unpack(NULL,drev,(uint8_t*)buffer);
     if(atsol->has_header==1)
         fprintf(stdout,"header:%d\n",atsol->header);
     fprintf(stdout,"username:%s\npassword:%s\n\n\n",atsol->usr,atsol->pw);

@@ -10,7 +10,7 @@
 #include <assert.h>
 
 #include "fastsocks.h"
-#include "auth_struct.pb-c.h"
+#include "socksprotocol/auth_struct.pb.h"
 #include <openssl/err.h>
 #include <openssl/bio.h>
 #include <openssl/ssl.h> //using TLSv1_2
@@ -89,13 +89,13 @@ BIO* popbiolist(listbio_t ** head) {
 int removebiolistbyindex(listbio_t *list,int index){
     int i = 0;
     BIO* retval = NULL;
-    listbio_t * current = *list;
+    listbio_t * current = list;
     listbio_t * temp_node = NULL;
     if (index == 0) {
         return popbiolist(list);
     }
 
-    for (int i = 0; i < index-1; i++) {
+    for (; i < index-1; i++) {
         if (current->next == NULL) {
             return -1;
         }

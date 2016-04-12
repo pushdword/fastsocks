@@ -35,9 +35,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/auth_struct.pb-c.o \
-	${OBJECTDIR}/fastsocks.o \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/_ext/44a402c9/fastsocks.o \
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/socksprotocol/auth_struct.pb.o
 
 
 # C Compiler Flags
@@ -62,22 +62,22 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/protohandler: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/protohandler ${OBJECTFILES} ${LDLIBSOPTIONS} -lprotobuf-c -lssl -lcrypto
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/protohandler ${OBJECTFILES} ${LDLIBSOPTIONS} -lprotobuf-c -lssl -lcrypto
 
-${OBJECTDIR}/auth_struct.pb-c.o: auth_struct.pb-c.c 
+${OBJECTDIR}/_ext/44a402c9/fastsocks.o: /home/int3/fastsocks/fastsocks.cc 
+	${MKDIR} -p ${OBJECTDIR}/_ext/44a402c9
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/44a402c9/fastsocks.o /home/int3/fastsocks/fastsocks.cc
+
+${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/auth_struct.pb-c.o auth_struct.pb-c.c
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
 
-${OBJECTDIR}/fastsocks.o: fastsocks.c 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/socksprotocol/auth_struct.pb.o: socksprotocol/auth_struct.pb.cc 
+	${MKDIR} -p ${OBJECTDIR}/socksprotocol
 	${RM} "$@.d"
-	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fastsocks.o fastsocks.c
-
-${OBJECTDIR}/main.o: main.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/socksprotocol/auth_struct.pb.o socksprotocol/auth_struct.pb.cc
 
 # Subprojects
 .build-subprojects:
